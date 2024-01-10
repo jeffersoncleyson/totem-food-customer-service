@@ -28,10 +28,10 @@ services:
     networks:
       - developer-network
 
-  totem-food-service:
-    container_name: totem-food-service
-    hostname: totem-food-service
-    image: jeffersoncleyson/totem-food-service:latest
+  totem-food-customer-service:
+    container_name: totem-food-customer-service
+    hostname: totem-food-customer-service
+    image: jeffersoncleyson/totem-food-customer-service:latest
     environment:
       SPRING_DATA_MONGODB_HOST: mongo-dev
       SPRING_DATA_MONGODB_PORT: 27017
