@@ -6,6 +6,7 @@ import com.totem.food.application.ports.in.dtos.customer.CustomerDto;
 import com.totem.food.application.usecases.commons.IConfirmUseCase;
 import com.totem.food.application.usecases.commons.ICreateUseCase;
 import com.totem.food.application.usecases.commons.IDeleteUseCase;
+import com.totem.food.application.usecases.commons.ISearchUniqueUseCase;
 import com.totem.food.framework.test.utils.TestUtils;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
@@ -55,6 +56,8 @@ class TotemCustomerRestApiAdapterTest {
     private IDeleteUseCase<String, CustomerDto> iDeleteUseCase;
     @Mock
     private IConfirmUseCase<Boolean, CustomerConfirmDto> iConfirmUseCase;
+    @Mock
+    private ISearchUniqueUseCase<String, CustomerDto> iSearchUniqueUseCase;
 
     private MockMvc mockMvc;
 
@@ -63,7 +66,7 @@ class TotemCustomerRestApiAdapterTest {
     @BeforeEach
     void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
-        final var totemCustomerRestApiAdapter = new TotemCustomerRestApiAdapter(createCustomerUseCase, iDeleteUseCase, iConfirmUseCase);
+        final var totemCustomerRestApiAdapter = new TotemCustomerRestApiAdapter(createCustomerUseCase, iDeleteUseCase, iConfirmUseCase, iSearchUniqueUseCase);
         mockMvc = MockMvcBuilders.standaloneSetup(totemCustomerRestApiAdapter).build();
     }
 

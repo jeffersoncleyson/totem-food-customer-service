@@ -6,9 +6,11 @@ import com.totem.food.application.ports.in.dtos.customer.CustomerDto;
 import com.totem.food.application.ports.in.rest.IConfirmRestApiPort;
 import com.totem.food.application.ports.in.rest.ICreateRestApiPort;
 import com.totem.food.application.ports.in.rest.IRemoveRestApiPort;
+import com.totem.food.application.ports.in.rest.ISearchUniqueRestApiPort;
 import com.totem.food.application.usecases.commons.IConfirmUseCase;
 import com.totem.food.application.usecases.commons.ICreateUseCase;
 import com.totem.food.application.usecases.commons.IDeleteUseCase;
+import com.totem.food.application.usecases.commons.ISearchUniqueUseCase;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,11 +27,14 @@ import static com.totem.food.framework.adapters.in.rest.constants.Routes.TOTEM_C
 @RequestMapping(value = API_VERSION_1 + TOTEM_CUSTOMER)
 @AllArgsConstructor
 public class TotemCustomerRestApiAdapter implements ICreateRestApiPort<CustomerCreateDto, ResponseEntity<CustomerDto>>,
-        IRemoveRestApiPort<String, ResponseEntity<Void>>, IConfirmRestApiPort<CustomerConfirmDto, ResponseEntity<Void>> {
+        IRemoveRestApiPort<String, ResponseEntity<Void>>,
+        IConfirmRestApiPort<CustomerConfirmDto, ResponseEntity<Void>>,
+        ISearchUniqueRestApiPort<String, ResponseEntity<CustomerDto>> {
 
     private final ICreateUseCase<CustomerCreateDto, CustomerDto> createCustomerUseCase;
     private final IDeleteUseCase<String, CustomerDto> iDeleteUseCase;
     private final IConfirmUseCase<Boolean, CustomerConfirmDto> iConfirmUseCase;
+    private final ISearchUniqueUseCase<String, CustomerDto> iSearchUniqueUseCase;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
@@ -50,5 +55,13 @@ public class TotemCustomerRestApiAdapter implements ICreateRestApiPort<CustomerC
     public ResponseEntity<Void> confirm(CustomerConfirmDto confirm) {
         iConfirmUseCase.confirm(confirm);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @Override
+    @GetMapping(CUSTOMER_ID)
+    public ResponseEntity<CustomerDto> getById(@PathVariable("cpf") String cpf) {
+        final var customerDto = iSearchUniqueUseCase.item(cpf);
+        return ResponseEntity.ok(customerDto);
     }
 }
