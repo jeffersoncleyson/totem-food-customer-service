@@ -132,8 +132,6 @@ docker-compose version 1.29.2, build 5becea4c
 IntelliJ IDEA 2023.1.2 (Community Edition)
 Build #IC-231.9011.34, built on May 16, 2023
 ```
-* MongoDB Compass versão 1.31.2
-
 ---
 
 ## Processo de execução das Tasks

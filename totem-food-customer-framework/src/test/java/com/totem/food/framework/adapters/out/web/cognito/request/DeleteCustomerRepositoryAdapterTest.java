@@ -1,5 +1,6 @@
 package com.totem.food.framework.adapters.out.web.cognito.request;
 
+import com.totem.food.application.constants.Constants;
 import com.totem.food.application.exceptions.ExternalCommunicationInvalid;
 import com.totem.food.application.exceptions.InvalidInput;
 import com.totem.food.application.ports.out.persistence.commons.IRemoveRepositoryPort;
@@ -15,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.cloud.openfeign.security.OAuth2AccessTokenInterceptor;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.DeleteUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.DeleteUserResponse;
@@ -75,7 +75,7 @@ class DeleteCustomerRepositoryAdapterTest {
 
         //## When and Then
         assertDoesNotThrow(() -> iRemoveRepositoryPort.removeItem(
-                OAuth2AccessTokenInterceptor.BEARER.concat(" ").concat(tokenJwt)
+                Constants.BEARER.concat(" ").concat(tokenJwt)
             )
         );
     }
@@ -86,7 +86,7 @@ class DeleteCustomerRepositoryAdapterTest {
 
         //## Given
         final var jwt = "invalid_jwt";
-        final var authorization = OAuth2AccessTokenInterceptor.BEARER.concat(" ").concat(jwt);
+        final var authorization = Constants.BEARER.concat(" ").concat(jwt);
         DeleteUserRequest deleteRequest = DeleteUserRequest.builder()
                 .accessToken(jwt)
                 .build();

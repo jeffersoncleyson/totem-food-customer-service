@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static mocks.adapters.out.persistence.mongo.customer.entity.CustomerEntityMock.getMock;
+import static com.totem.food.framework.adapters.out.web.cognito.mocks.CustomerEntityMock.getMock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;

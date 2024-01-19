@@ -58,6 +58,7 @@ public class CreateCustomerRepositoryAdapter implements ICreateRepositoryPort<Cu
             userAttrsList.add(email);
             userAttrsList.add(cpf);
 
+
             SignUpRequest signUpRequest = SignUpRequest.builder()
                     .userAttributes(userAttrsList)
                     .username(item.getCpf())

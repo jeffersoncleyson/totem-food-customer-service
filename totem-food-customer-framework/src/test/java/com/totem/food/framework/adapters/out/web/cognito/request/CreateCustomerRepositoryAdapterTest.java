@@ -28,7 +28,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.UsernameExi
 import java.util.ArrayList;
 import java.util.List;
 
-import static mocks.adapters.out.persistence.mongo.customer.entity.CustomerEntityMock.getMock;
+import static com.totem.food.framework.adapters.out.web.cognito.mocks.CustomerEntityMock.getMock;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

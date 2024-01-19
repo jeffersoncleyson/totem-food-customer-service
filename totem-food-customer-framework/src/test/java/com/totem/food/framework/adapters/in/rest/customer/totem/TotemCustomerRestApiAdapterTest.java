@@ -1,5 +1,6 @@
 package com.totem.food.framework.adapters.in.rest.customer.totem;
 
+import com.totem.food.application.constants.Constants;
 import com.totem.food.application.ports.in.dtos.customer.CustomerConfirmDto;
 import com.totem.food.application.ports.in.dtos.customer.CustomerCreateDto;
 import com.totem.food.application.ports.in.dtos.customer.CustomerDto;
@@ -18,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.cloud.openfeign.security.OAuth2AccessTokenInterceptor;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -145,8 +145,8 @@ class TotemCustomerRestApiAdapterTest {
 
         final var httpServletRequest = delete(endpoint)
                 .header(
-                        OAuth2AccessTokenInterceptor.AUTHORIZATION,
-                        OAuth2AccessTokenInterceptor.BEARER.concat(" access_token")
+                        Constants.AUTHORIZATION,
+                        Constants.BEARER.concat(" access_token")
                 );
 
         //### When
