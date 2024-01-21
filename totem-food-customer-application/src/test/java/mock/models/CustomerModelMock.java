@@ -8,9 +8,9 @@ public class CustomerModelMock {
 
     public static CustomerModel getMock() {
         var customerModel = new CustomerModel();
-        customerModel.setId("1");
-        customerModel.setName("name");
-        customerModel.setMobile("5511911223344");
+        customerModel.setId("123");
+        customerModel.setName("John");
+        customerModel.setMobile("5511912121212");
         customerModel.setEmail("customer@gmail.com");
         customerModel.setCpf("12312312399");
         customerModel.setPassword("123qwe");

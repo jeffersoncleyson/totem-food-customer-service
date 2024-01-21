@@ -13,6 +13,7 @@ public class CustomerDtoMock {
         customerDto.setName("John");
         customerDto.setCpf("12312312399");
         customerDto.setMobile("5511912121212");
+        customerDto.setEmail("customer@gmail.com");
         customerDto.setModifiedAt(ZonedDateTime.now(ZoneOffset.UTC));
         customerDto.setCreateAt(ZonedDateTime.now(ZoneOffset.UTC));
         return customerDto;
