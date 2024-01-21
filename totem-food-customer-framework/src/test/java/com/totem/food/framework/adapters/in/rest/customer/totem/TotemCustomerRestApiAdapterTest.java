@@ -10,6 +10,7 @@ import com.totem.food.application.usecases.commons.IDeleteUseCase;
 import com.totem.food.application.usecases.commons.ISearchUniqueUseCase;
 import com.totem.food.framework.test.utils.TestUtils;
 import lombok.SneakyThrows;
+import mocks.dtos.CustomerDtoMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +24,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.ZoneOffset;
@@ -39,7 +43,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -110,7 +113,7 @@ class TotemCustomerRestApiAdapterTest {
 
         final var jsonOpt = TestUtils.toJSON(customerCreateDto);
         final var json = jsonOpt.orElseThrow();
-        final var httpServletRequest = post(endpoint)
+        final var httpServletRequest = MockMvcRequestBuilders.post(endpoint)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json);
 
@@ -185,6 +188,40 @@ class TotemCustomerRestApiAdapterTest {
                 .andExpect(status().isNoContent());
 
         verify(iConfirmUseCase, times(1)).confirm(any(CustomerConfirmDto.class));
+
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = API_VERSION_1 + TOTEM_CUSTOMER + CUSTOMER_ID)
+    void getById(String endpoint) throws Exception {
+
+        //### Mock - Objects and Values
+        final var customerDto = CustomerDtoMock.getMock();
+        final String cpf = CustomerDtoMock.getMock().getCpf();
+
+        //## Given
+        when(iSearchUniqueUseCase.item(cpf)).thenReturn(customerDto);
+
+        final MockHttpServletRequestBuilder mockHttp = MockMvcRequestBuilders.get(endpoint, cpf)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        //## When
+        final ResultActions resultActions = mockMvc.perform(mockHttp);
+
+        //##then
+        resultActions.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+        final var responseJson = resultActions.andReturn().getResponse().getContentAsString();
+        final var customerDtoResponseOpt = TestUtils.toObject(responseJson, CustomerDto.class).orElseThrow();
+
+        assertThat(customerDto)
+                .usingRecursiveComparison()
+                .ignoringFieldsOfTypes(ZonedDateTime.class)
+                .isEqualTo(customerDtoResponseOpt);
+
+        verify(iSearchUniqueUseCase, times(1)).item(cpf);
 
     }
 }

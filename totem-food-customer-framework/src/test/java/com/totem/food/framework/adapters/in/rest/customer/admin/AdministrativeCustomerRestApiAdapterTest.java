@@ -1,106 +1,136 @@
 package com.totem.food.framework.adapters.in.rest.customer.admin;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.totem.food.application.ports.in.dtos.customer.CustomerDto;
 import com.totem.food.application.ports.in.dtos.customer.CustomerFilterDto;
 import com.totem.food.application.usecases.commons.ISearchUseCase;
+import com.totem.food.framework.test.utils.TestUtils;
 import lombok.SneakyThrows;
 import mocks.dtos.CustomerDtoMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static com.totem.food.framework.adapters.in.rest.constants.Routes.ADM_CUSTOMER;
+import static com.totem.food.framework.adapters.in.rest.constants.Routes.API_VERSION_1;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
+@AutoConfigureMockMvc
+@ExtendWith(SpringExtension.class)
 class AdministrativeCustomerRestApiAdapterTest {
 
     @Mock
     private ISearchUseCase<CustomerFilterDto, List<CustomerDto>> iSearchCustomerUseCase;
 
-    private AdministrativeCustomerRestApiAdapter administrativeCustomerRestApiAdapter;
-
-    private AutoCloseable autoCloseable;
+    private MockMvc mockMvc;
+    private AutoCloseable closeable;
 
     @BeforeEach
     void setUp() {
-        autoCloseable = MockitoAnnotations.openMocks(this);
-        administrativeCustomerRestApiAdapter = new AdministrativeCustomerRestApiAdapter(iSearchCustomerUseCase);
+        closeable = MockitoAnnotations.openMocks(this);
+        final var administrativeCustomerRestApiAdapter = new AdministrativeCustomerRestApiAdapter(iSearchCustomerUseCase);
+        mockMvc = MockMvcBuilders.standaloneSetup(administrativeCustomerRestApiAdapter).build();
     }
 
     @SneakyThrows
     @AfterEach
     void tearDown() {
-        autoCloseable.close();
+        closeable.close();
     }
 
-    @Test
-    void listAllWhenNoCustomersMatchTheFilter() {
-        //## Given - Mocks
-        var customerFilterDto = new CustomerFilterDto("John");
+    @ParameterizedTest
+    @ValueSource(strings = API_VERSION_1 + ADM_CUSTOMER)
+    void testListAllWhenPassedBody(String endpoint) throws Exception {
 
-        when(iSearchCustomerUseCase.items(customerFilterDto)).thenReturn(List.of());
+        //### Mocks - Objects and Values
+        final var customerDto = CustomerDtoMock.getMock();
+        final var customerFilterDto = new CustomerFilterDto("John");
+
+        //## Given
+        when(iSearchCustomerUseCase.items(any(CustomerFilterDto.class))).thenReturn(List.of(customerDto));
+
+        final String jsonRequest = TestUtils.toJSON(customerFilterDto).orElseThrow();
+        final MockHttpServletRequestBuilder mockHttp = MockMvcRequestBuilders.get(endpoint)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest);
 
         //## When
-        ResponseEntity<List<CustomerDto>> response = administrativeCustomerRestApiAdapter.listAll(customerFilterDto);
+        final ResultActions resultAction = mockMvc.perform(mockHttp);
 
         //## Then
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().isEmpty());
+        resultAction.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
-        verify(iSearchCustomerUseCase, times(1)).items(customerFilterDto);
+        final String responseJson = resultAction.andReturn().getResponse().getContentAsString();
+        final List<CustomerDto> responseEntity = TestUtils.toTypeReferenceObject(responseJson, new TypeReference<List<CustomerDto>>() {
+        }).orElseThrow();
+
+        assertThat(responseEntity)
+                .usingRecursiveComparison()
+                .ignoringFieldsOfTypes(ZonedDateTime.class)
+                .isEqualTo(List.of(customerDto));
+
+        verify(iSearchCustomerUseCase, times(1)).items(any(CustomerFilterDto.class));
+
     }
 
-    @Test
-    void listAllWhenFilterIsProvided() {
+    @ParameterizedTest
+    @ValueSource(strings = API_VERSION_1 + ADM_CUSTOMER)
+    void testListAllWhenEmptyBody(String endpoint) throws Exception {
 
-        //## Given - Mocks
-        var customerDto = CustomerDtoMock.getMock();
-        var customerFilterDto = new CustomerFilterDto("John");
-        var customersDto = List.of(customerDto);
+        //### Mocks - Objects and Values
+        final var customerDto = CustomerDtoMock.getMock();
 
-        when(iSearchCustomerUseCase.items(customerFilterDto)).thenReturn(customersDto);
+        //## Given
+        when(iSearchCustomerUseCase.items(null)).thenReturn(List.of(customerDto));
 
-        //## When
-        List<CustomerDto> result = administrativeCustomerRestApiAdapter.listAll(customerFilterDto).getBody();
-
-        //## Then
-        assertNotNull(result);
-        assertEquals(customersDto, result);
-
-        verify(iSearchCustomerUseCase, times(1)).items(customerFilterDto);
-    }
-
-    @Test
-    void listAllWhenNoFilterIsProvided() {
-
-        //## Given - Mocks
-        var customerDto = CustomerDtoMock.getMock();
-        var customersDto = List.of(customerDto);
-
-        when(iSearchCustomerUseCase.items(null)).thenReturn(customersDto);
+        final MockHttpServletRequestBuilder mockHttp = MockMvcRequestBuilders.get(endpoint)
+                .contentType(MediaType.APPLICATION_JSON);
 
         //## When
-        ResponseEntity<List<CustomerDto>> responseEntity = administrativeCustomerRestApiAdapter.listAll(null);
+        final ResultActions resultAction = mockMvc.perform(mockHttp);
 
         //## Then
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(customersDto, responseEntity.getBody());
+        resultAction.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+        final String responseJson = resultAction.andReturn().getResponse().getContentAsString();
+        final List<CustomerDto> responseEntity = TestUtils.toTypeReferenceObject(responseJson, new TypeReference<List<CustomerDto>>() {
+        }).orElseThrow();
+
+        assertThat(responseEntity)
+                .usingRecursiveComparison()
+                .ignoringFieldsOfTypes(ZonedDateTime.class)
+                .isEqualTo(List.of(customerDto));
 
         verify(iSearchCustomerUseCase, times(1)).items(null);
+
     }
 
 }

@@ -44,4 +44,5 @@ class CognitoClientTest {
         //## Then
         assertNotNull(client);
     }
+
 }
