@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 class CreateCustomerUserCaseTest {
 
     @Spy
-    private ICustomerMapper iCustomerMapper = Mappers.getMapper(ICustomerMapper.class);
+    private final ICustomerMapper iCustomerMapper = Mappers.getMapper(ICustomerMapper.class);
 
     @Mock
     private ICreateRepositoryPort<CustomerModel> iCreateRepositoryPort;

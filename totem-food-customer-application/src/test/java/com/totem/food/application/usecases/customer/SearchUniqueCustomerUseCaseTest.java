@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class SearchUniqueCustomerUseCaseTest {
 
     @Spy
-    private ICustomerMapper iCustomerMapper = Mappers.getMapper(ICustomerMapper.class);
+    private final ICustomerMapper iCustomerMapper = Mappers.getMapper(ICustomerMapper.class);
 
     @Mock
     private ISearchUniqueRepositoryPort<Optional<CustomerModel>> uniqueRepositoryPort;

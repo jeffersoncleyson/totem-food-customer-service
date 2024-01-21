@@ -13,10 +13,6 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ICustomerMapper {
 
-    CustomerDomain toDomain(CustomerDto input);
-
-    CustomerDomain toDomain(CustomerModel input);
-
     CustomerDto toDto(CustomerModel input);
 
     CustomerModel toModel(CustomerDomain input);

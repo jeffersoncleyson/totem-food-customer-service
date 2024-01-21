@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 class SearchCustomerUseCaseTest {
 
     @Spy
-    private ICustomerMapper iCustomerMapper = Mappers.getMapper(ICustomerMapper.class);
+    private final ICustomerMapper iCustomerMapper = Mappers.getMapper(ICustomerMapper.class);
 
     @Mock
     private ISearchRepositoryPort<CustomerFilterDto, List<CustomerModel>> iCustomerRepositoryPort;

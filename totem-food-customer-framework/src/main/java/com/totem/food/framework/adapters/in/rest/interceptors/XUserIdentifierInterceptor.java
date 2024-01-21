@@ -21,7 +21,7 @@ public class XUserIdentifierInterceptor implements HandlerInterceptor {
     private final IContextUseCase<XUserIdentifierContextDto, String> iContextUseCase;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
         var xUserIdentifierContextDto = validateHeaderXUserIdentifier(request);
         iContextUseCase.setContext(xUserIdentifierContextDto);
@@ -30,7 +30,7 @@ public class XUserIdentifierInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
         iContextUseCase.clearContext();
     }
 
