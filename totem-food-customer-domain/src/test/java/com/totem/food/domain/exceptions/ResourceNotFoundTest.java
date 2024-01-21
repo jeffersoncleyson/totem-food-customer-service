@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ResourceNotFoundTest {
 
     @Test
-    public void resourceNotFoundTest() {
+    void resourceNotFoundTest() {
         Class<?> resource = String.class;
         String message = "Resource not found";
 
