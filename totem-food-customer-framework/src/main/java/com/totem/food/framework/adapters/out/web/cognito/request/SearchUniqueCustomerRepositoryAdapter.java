@@ -15,8 +15,10 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.UserType;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Component
@@ -24,14 +26,20 @@ public class SearchUniqueCustomerRepositoryAdapter implements ISearchUniqueRepos
 
     private final CognitoClient cognitoClient;
     private final String userPoolId;
+    private final boolean isDevProfile;
 
     public SearchUniqueCustomerRepositoryAdapter(Environment env, CognitoClient cognitoClient) {
         this.userPoolId = env.getProperty("cognito.userPool.id");
         this.cognitoClient = cognitoClient;
+        this.isDevProfile = Arrays.stream(env.getActiveProfiles()).anyMatch(Predicate.isEqual("dev"));
     }
 
     @Override
     public Optional<CustomerModel> findById(String id) {
+
+        if (isDevProfile) {
+            return Optional.of(CustomerModel.getForDevProfile());
+        }
 
         try (CognitoIdentityProviderClient client = cognitoClient.connect()) {
 

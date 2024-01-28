@@ -21,4 +21,17 @@ public class CustomerModel {
     private String password;
     private ZonedDateTime modifiedAt;
     private ZonedDateTime createAt;
+
+    public static CustomerModel getForDevProfile(){
+        return new CustomerModel(
+                "c8d80736-97d4-4993-b963-a88f6e314675",
+                "e2e-name",
+                "12345678901",
+                "e2e@email.com",
+                "00999999999",
+                "123456",
+                ZonedDateTime.now().plusMinutes(10),
+                ZonedDateTime.now()
+        );
+    }
 }

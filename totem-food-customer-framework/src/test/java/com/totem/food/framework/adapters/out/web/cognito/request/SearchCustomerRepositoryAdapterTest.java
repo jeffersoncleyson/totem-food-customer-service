@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SearchCustomerRepositoryAdapterTest {
@@ -49,6 +50,7 @@ class SearchCustomerRepositoryAdapterTest {
     void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
         Mockito.when(env.getProperty("cognito.userPool.id")).thenReturn("id");
+        Mockito.when(env.getActiveProfiles()).thenReturn(new String[]{"default"});
         iSearchRepositoryPort = new SearchCustomerRepositoryAdapter(env, cognitoClient);
     }
 

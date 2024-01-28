@@ -16,8 +16,11 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersRe
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Component
@@ -25,14 +28,20 @@ public class SearchCustomerRepositoryAdapter implements ISearchRepositoryPort<Cu
 
     private final CognitoClient cognitoClient;
     private final String userPoolId;
+    private final boolean isDevProfile;
 
     public SearchCustomerRepositoryAdapter(Environment env, CognitoClient cognitoClient) {
         this.userPoolId = env.getProperty("cognito.userPool.id");
         this.cognitoClient = cognitoClient;
+        this.isDevProfile = Arrays.stream(env.getActiveProfiles()).anyMatch(Predicate.isEqual("dev"));
     }
 
     @Override
     public List<CustomerModel> findAll(CustomerFilterDto filterCategoryDto) {
+
+        if (isDevProfile) {
+            return List.of(CustomerModel.getForDevProfile());
+        }
 
         final var customerModels = new ArrayList<CustomerModel>();
 

@@ -47,6 +47,7 @@ class SearchUniqueCustomerRepositoryAdapterTest {
     void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
         Mockito.when(env.getProperty("cognito.userPool.id")).thenReturn("id");
+        Mockito.when(env.getActiveProfiles()).thenReturn(new String[]{"default"});
         iSearchUniqueRepositoryPort = new SearchUniqueCustomerRepositoryAdapter(env, cognitoClient);
     }
 
